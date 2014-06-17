@@ -26,13 +26,13 @@ var LogMessage = function (severity, message) {
  * @example
  *     var logging = require("logging");
  *     // all logs end up in extendables/log
- *     var log = new Log("example.log");
+ *     var log = new logging.Log("example.log");
  *     try {
  *         throw new Error();
  *     } catch (error) {
  *         log.debug("Caught error, will log a debug message now");
  *         log.critical("Something happened: {error} ({env})", {'error': error, 'env': $.os});
-  *    }
+ *    }
  */
 
 var Log = function (name, log_level) {
@@ -42,30 +42,20 @@ var Log = function (name, log_level) {
 	if (log_level && log_level.is(String)) log_level = SEVERITY.indexOf(log_level);
 	this.log_level = log_level || settings.LOGGING_LOG_LEVEL || 4;
 	
-	this.truncate = function (forced) {
-		// truncate the logfile if it gets bigger than half a megabyte
-		self.file.open("e");
-		if (forced || self.file.length > 1024*512) {
-			self.file.length = 0;
-		}
-		self.file.close();
-	}
-	
 	this.writeln = function (severity, message) {
+		self.file.encoding = "UTF-8";
 		var log = self.file;		
-		var logmessage = new LogMessage(severity, message)
-		log.open("e");
-		log.seek(log.length);	
-		log.writeln(logmessage);
-		log.close();		
+		var logmessage = new LogMessage(severity, message);
+ 		this.logger.open('a');
+ 		this.logger.writeln(logmessage);
+ 		this.logger.close();
 	}
 
 	// basic logger
 	this.log = function () {
 		var arguments = arguments.to('array');
 		var severity  = arguments.shift();
-		var template = arguments.shift();
-		var message = template.format.apply(template, arguments);
+		var message = arguments.shift();
 		// only log what's equal to or below the configured logging treshold
 		if (severity <= self.log_level) {
 			self.writeln(severity, message);
@@ -119,9 +109,10 @@ var Log = function (name, log_level) {
 	}
 
 	// init
-	var logfolder = settings.LOGGING_FOLDER || new Folder("log").at(Folder.extendables);
-	this.file = new File(this.name).at(logfolder);
-	this.truncate();
+	this.logger = new File(this.name);
+	if(this.logger.lineFeed == "macintosh") {
+		this.logger.lineFeed = "unix";
+	}
 }
 
 exports.Log = Log;

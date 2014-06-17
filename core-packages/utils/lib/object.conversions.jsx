@@ -1,4 +1,4 @@
-﻿var exports = {};
+﻿var exports = exports || {};
 var base64 = exports;
 #include "../dependencies/base64.js"
 #include "../dependencies/json2.js"
@@ -31,12 +31,12 @@ keyvalue.decode = function (str, options) {
 		pair = pair.split(separator);
 		obj[pair[0]] = pair[1];
 	});
-	return obj;	
+	return obj;
 }
 
 /**
  * @desc Object serialization.
- * 
+ *
  * The result of serialization followed by deserialization is the original object, whereas
  * a conversion is not reversible.
  *
@@ -89,11 +89,11 @@ exports.deserialize = function (self, type, options) {
 }
 
 /**
- * @desc Provides easy shortcuts to a number of common conversions, like lowercasing a string or 
+ * @desc Provides easy shortcuts to a number of common conversions, like lowercasing a string or
  * converting the ``arguments`` object to an array.
- * 
+ *
  * All of these conversions return a new object, they do not modify the original.
- * 
+ *
  * A ``slug`` is a string that's usable as a filename or in an URL: it's
  * a lowercased string with all non-alphanumeric characters stripped out, and spaces replaced by
  * hyphens.
@@ -111,7 +111,7 @@ exports.deserialize = function (self, type, options) {
  *     > to_integers(list);
  *     [1,2,3]
  */
-
+ 
 exports.to = function (self, type) {
 	// never, ever modify the original object
 	var result = object.clone(self);

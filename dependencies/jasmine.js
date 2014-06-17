@@ -126,7 +126,7 @@ jasmine.getEnv = function() {
  * @returns {Boolean}
  */
 jasmine.isArray_ = function(value) {
-  return jasmine.isA_("Array", value);  
+  return jasmine.isA_("Array", value);
 };
 
 /**
@@ -973,7 +973,7 @@ jasmine.Block = function(env, func, spec) {
   this.spec = spec;
 };
 
-jasmine.Block.prototype.execute = function(onComplete) {  
+jasmine.Block.prototype.execute = function(onComplete) {
   try {
     this.func.apply(this.spec);
   } catch (e) {
@@ -1009,11 +1009,11 @@ jasmine.JsApiReporter.prototype.summarize_ = function(suiteOrSpec) {
   var isSuite = suiteOrSpec instanceof jasmine.Suite;
   var summary = {
     id: suiteOrSpec.id,
-    name: suiteOrSpec.description,
+    name: suiteOrSpec.getFullName(),
     type: isSuite ? 'suite' : 'spec',
     children: []
   };
-  
+
   if (isSuite) {
     var children = suiteOrSpec.children();
     for (var i = 0; i < children.length; i++) {
@@ -1714,7 +1714,7 @@ jasmine.Queue.prototype.next_ = function() {
 
   while (goAgain) {
     goAgain = false;
-    
+
     if (self.index < self.blocks.length && !this.abort) {
       var calledSynchronously = true;
       var completedSynchronously = false;
@@ -1752,7 +1752,7 @@ jasmine.Queue.prototype.next_ = function() {
       if (completedSynchronously) {
         onComplete();
       }
-      
+
     } else {
       self.running = false;
       if (self.onComplete) {

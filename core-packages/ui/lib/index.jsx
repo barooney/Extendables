@@ -21,7 +21,7 @@ function ControlMixins () {
 			} else {
 				this[property] = mixin[property];
 			}
-		}	
+		}
 	}
 }
 
@@ -33,22 +33,22 @@ function ControlMixins () {
 
 function UIShortcuts () {
 	/* CONTAINER TYPES */
-	
+
 	/** @desc adds a group, displayed as a row */
 	this.row = function (name) {
-		var group = this.add_group(name);	
+		var group = this.add_group(name);
 		group.window.orientation = 'row';
 		return group;
 	}
 	/** @desc adds a group, displayed as a column */
 	this.column = function (name) {
-		var group = this.add_group(name);	
-		group.window.orientation = 'column';		
+		var group = this.add_group(name);
+		group.window.orientation = 'column';
 		return group;
 	}
 	/** @desc adds a group, displayed as a stack */
 	this.stack = function (name) {
-		var group = this.add_group(name);	
+		var group = this.add_group(name);
 		group.window.orientation = 'stack';
 		return group;
 	}
@@ -58,16 +58,16 @@ function UIShortcuts () {
 	 * @param {String} name The name this panel will take on within the dialog object
 	 * @param {Object} [properties] any other properties you want to pass along on creation
 	 */
-	this.panel = function (name, properties) {
+	this.panel = function (name, label, properties) {
 		var properties = properties || {};
-		return this.add_container(name, 'panel', properties);		
+		return this.add_container(name, 'panel', label, properties);
 	}
 
-	/** 
+	/**
 	 * @desc adds a list, equivalent to ``listbox`` in plain ScriptUI
 	 * @param {String} name The name this list will take on within the dialog object
 	 * @param {String[]|Number} [headers]
-	 *     Either just a number of columns, or an array with 
+	 *     Either just a number of columns, or an array with
 	 *     header names. Once set, you may not add list items
 	 *     with more columns than available in the header.
 	 * @param {Object} [properties] any other properties you want to pass along on creation
@@ -79,8 +79,8 @@ function UIShortcuts () {
 				properties.merge({'numberOfColumns': headers});
 			} else {
 				properties.merge({
-					'numberOfColumns': headers.length, 
-					'showHeaders': true, 
+					'numberOfColumns': headers.length,
+					'showHeaders': true,
 					'columnTitles': headers
 				});
 			}
@@ -88,71 +88,77 @@ function UIShortcuts () {
 		return this.add_list(name, properties);
 	}
 
+	/** @desc adds a tree, equivalent to ``treeview`` in plain ScriptUI */
+	// this.tree = function (name, text, options) {
+ 	// 	return this.add_control(name, 'treeview', text, options);
+ 	// }
+ 
+ 	this.tree = function(name, properties) {
+ 		var properties = properties || {};
+ 		return this.add_tree(name, properties);
+ 	}
+
 	/* SIMPLE TYPES */
 
 	/** @desc adds a button */
-	this.button = function (name, text) {
-		return this.add_control(name, 'button', text);
+	this.button = function (name, text, options) {
+		return this.add_control(name, 'button', text, options);
 	}
 	/** @desc adds a checkbox */
-	this.checkbox = function (name, text) {
-		return this.add_control(name, 'checkbox', text);		
+	this.checkbox = function (name, text, options) {
+		return this.add_control(name, 'checkbox', text, options);
 	}
 	/** @desc adds a dropdown, equivalent to ``dropdownlist`` in plain ScriptUI */
-	this.dropdown = function (name, text) {
-		return this.add_control(name, 'dropdownlist', text);	
+	this.dropdown = function (name, text, options) {
+		return this.add_control(name, 'dropdownlist', text, options);
 	}
 	/** @desc adds an input field, equivalent to ``edittext`` in plain ScriptUI */
-	this.input = function (name, text) {
-		return this.add_control(name, 'edittext', text);	
+	this.input = function (name, text, options) {
+		return this.add_control(name, 'edittext', text, options);
 	}
 	/** @desc adds an item (part of a list) */
 	this.item = function (name, values) {
-		return this.add_item(name, values);		
+		return this.add_item(name, values);
 	}
 	/** @desc adds a flash element, equivalent to ``flashplayer`` in plain ScriptUI */
-	this.flash = function (name, text) {
-		return this.add_control(name, 'flashplayer', text);		
+	this.flash = function (name, text, options) {
+		return this.add_control(name, 'flashplayer', text, options);
 	}
 	/** @desc adds an icon button, equivalent to ``iconbutton`` in plain ScriptUI */
-	this.icon = function (name, text) {
-		return this.add_control(name, 'iconbutton', text);		
+	this.icon = function (name, text, options) {
+		return this.add_control(name, 'iconbutton', text, options);
 	}
 	/** @desc adds an image */
-	this.image = function (name, text) {
-		return this.add_control(name, 'image', text);		
+	this.image = function (name, text, options) {
+		return this.add_control(name, 'image', text, options);
 	}
 	/** @desc adds a progress bar */
-	this.progressbar = function (name, text) {
-		return this.add_control(name, 'progressbar', text);		
+	this.progressbar = function (name, text, options) {
+		return this.add_control(name, 'progressbar', text, options);
 	}
 	/** @desc adds a radio button, equivalent to ``radiobutton`` in plain ScriptUI */
-	this.radio = function (name, text) {
-		return this.add_control(name, 'radiobutton', text);		
+	this.radio = function (name, text, options) {
+		return this.add_control(name, 'radiobutton', text, options);
 	}
 	/** @desc adds a scrollbar */
-	this.scrollbar = function (name, text) {
-		return this.add_control(name, 'scrollbar', text);		
+	this.scrollbar = function (name, text, options) {
+		return this.add_control(name, 'scrollbar', text, options);
 	}
 	/** @desc adds a slider */
-	this.slider = function (name, text) {
-		return this.add_control(name, 'slider', text);		
+	this.slider = function (name, text, options) {
+		return this.add_control(name, 'slider', text, options);
 	}
 	/** @desc adds a text element, equivalent to ``statictext`` in plain ScriptUI */
-	this.text = function (name, text) {
-		return this.add_control(name, 'statictext', text);		
+	this.text = function (name, text, options) {
+		return this.add_control(name, 'statictext', text, options);
 	}
 	/** @desc adds a tab (part of a tabs control) */
-	this.tab = function (name, text) {
-		return this.add_control(name, 'tab', text);		
+	this.tab = function (name, text, options) {
+		return this.add_container(name, 'tab', text, options);
 	}
 	/** @desc adds a tabs container, equivalent to ``tabbedpanel`` in plain ScriptUI */
-	this.tabs = function (name, text) {
-		return this.add_control(name, 'tabbedpanel', text);		
-	}
-	/** @desc adds a tree, equivalent to ``treeview`` in plain ScriptUI */
-	this.tree = function (name, text) {
-		return this.add_control(name, 'treeview', text);		
+	this.tabs = function (name, text, options) {
+		return this.add_container(name, 'tabbedpanel', text, options);
 	}
 }
 
@@ -162,16 +168,16 @@ function UIShortcuts () {
  * Don't instantiate this class directly.
  */
 
-function UI () {	
-	var self = this;	
-	
+function UI () {
+	var self = this;
+
 	this.mixins = {};
 	this.merge(new UIShortcuts());
 
 	// this variable is continually updated to reflect the last added layout element
 	this._last_added = this;
 
-	
+
 	/**
 	 * @desc To make ``UI`` methods chainable, they return the entire
 	 * ``UI`` object instead of any control element you may have just created;
@@ -200,7 +206,7 @@ function UI () {
 	 */
 	this.using = function () {
 		// arguments may be passed either as variable arguments or as an array
-		var mixin_names = arguments.to('array').flatten();		
+		var mixin_names = arguments.to('array').flatten();
 		mixin_names.forEach(function(mixin_name){
 			var mixin = self.mixins[mixin_name];
 			if (mixin == undefined) {
@@ -217,7 +223,7 @@ function UI () {
 	}
 
 	this.add_item = function (name, values) {
-		if (this[name] != undefined) throw new Error("{} is a reserved name.".format(name));
+		//if (this[name] != undefined) throw new Error("{} is a reserved name.".format(name));
 		if (!values.is(Array)) throw new TypeError("A list item expects an array of text labels, not a string");
 		var control = self.window.add('item', values.shift());
 		values.forEach(function (value, i) {
@@ -227,15 +233,15 @@ function UI () {
 		control.merge(new ControlMixins());
 		this[name] = control;
 		self._last_added = control;
-		return this;		
+		return this;
 	}
-	
+
 	this.add_control = function (name, type, text, properties) {
-		// people can add controls to this object willy-nilly, 
+		// people can add controls to this object willy-nilly,
 		// so we check whether they're not overriding any existing
-		// methods, attributes or controls.		
+		// methods, attributes or controls.
 		if (this[name] != undefined) throw new Error("{} is a reserved name.".format(name));
-		
+
 		var control = self.window.add(type, undefined, text, properties);
 		control.merge(new ControlMixins());
 		this[name] = control;
@@ -243,21 +249,25 @@ function UI () {
 		return this;
 	}
 
-	this.add_group = function (name, properties) {
-		return this.add_container(name, 'group', properties);
+	this.add_group = function (name, label, properties) {
+		return this.add_container(name, 'group', label, properties);
 	}
 
 	this.add_list = function (name, properties) {
-		return this.add_container(name, 'listbox', properties);		
+		return this.add_container(name, 'listbox', null, properties);
 	}
 
-	this.add_container = function (name, type, properties) {
+	this.add_tree = function (name, properties) {
+		return this.add_container(name, 'treeview', null, properties);
+	}
+
+	this.add_container = function (name, type, label, properties) {
 		var ui = new UI();
-		ui.window = this.add_control(name, type, undefined, properties).el();
+		ui.window = this.add_control(name, type, label, properties).el();
 		ui._last_added = ui.window;
 		ui.mixins = this.mixins;
 		this[name] = ui;
-		return ui;		
+		return ui;
 	}
 }
 
@@ -266,12 +276,12 @@ function UI () {
 
 exports.Dialog = function (title) {
 	var ui = new UI();
-	ui.window = new Window('dialog', title); 
+	ui.window = new Window('dialog', title);
 	return ui;
 }
 
 exports.Palette = function (title) {
 	var ui = new UI();
-	ui.window = new Window('palette', title); 
+	ui.window = new Window('palette', title);
 	return ui;
 }

@@ -406,8 +406,13 @@ Array.prototype.sum = function (salient) {
 	}
 
 	var features = this.map(mapper);
-	
-	return features.reduce(function (a, b) { return a + b; });	
+  
+  var redfunc = function (a, b) { 
+    if (a.is(Number)) a=a.valueOf(); 
+    if (b.is(Number)) b=b.valueOf(); 
+    return a + b; 
+  }
+  return features.reduce(redfunc);
 }
 
 /**

@@ -1,4 +1,5 @@
-﻿exports.encode64 = encoder('+/');
+﻿exports = exports || {}
+exports.encode64 = encoder('+/');
 exports.decode64 = decoder('+/');
 exports.urlsafeEncode64 = encoder('-_');
 exports.urlsafeDecode64 = decoder('-_');

@@ -4,15 +4,16 @@
  */
 
 var __modules__ = {};
+var __cache__ = {};
 function require (module_id) {
 	// CommonJS: A module identifier is a String of "terms"
 	var terms = module_id.split('/');
 	var module = terms.shift();
 	if (__modules__.hasOwnProperty(module)) {
 		if (terms.length) {
-			return __modules__[module].get_submodule(terms).load().exports;
+			return __cache__[module_id] = __cache__[module_id] || __modules__[module].get_submodule(terms).load().exports;
 		} else {
-			return __modules__[module].load().exports;
+			return __cache__[module] = __cache__[module] || __modules__[module].load().exports;
 		}
 	} else {
 		throw Error("No package named " + module_id);
@@ -32,9 +33,9 @@ function _is_valid_module (file_or_folder) {
 	return file_or_folder.is(Folder) || file_or_folder.name.endswith(".jsx");
 }
 
-function Module (file_or_folder, is_package) {	
+function Module (file_or_folder, is_package) {
 	var self = this;
-	
+
 	this.eval = function (file) {
 		var exports = {};
 		var module = {
@@ -45,9 +46,9 @@ function Module (file_or_folder, is_package) {
 		try {
 			$.evalFile(file);
 		} catch (error) {
-			log_buffer.push([3, "Could not fully load " + module.id + "\n" + error]);	
+			log_buffer.push([3, "Could not fully load " + module.id + "\n" + error]);
 		}
-		return exports;		
+		return exports;
 	};
 
 	this.extract_submodules = function () {
@@ -56,7 +57,7 @@ function Module (file_or_folder, is_package) {
 			base.changePath("./lib");
 		}
 		var submodule_files = base.getFiles(_is_valid_module);
-		
+
 		submodule_files.forEach(function(submodule) {
 			var submodule = new Module(submodule);
 			self.submodules[submodule.id] = submodule;
@@ -99,7 +100,7 @@ function Module (file_or_folder, is_package) {
 		}
 		return self
 	}
-	
+
 	/* init */
 	this.id = file_or_folder.displayName.split('.')[0];
 	this.uri = file_or_folder.absoluteURI;
@@ -118,13 +119,13 @@ function load_modules (packagefolders) {
 			var folder = packagefolder;
 		}
 		var packages = folder.getFiles(_is_valid_module);
-		
+
 		packages.forEach(function(file_or_folder) {
 			// An alias regists as a file in ExtendScript, even if it refers to a folder.
 			// Check if the file is an alias and, if so, resolve it.
 			if (file_or_folder.alias) file_or_folder = file_or_folder.resolve();
 			var module = new Module(file_or_folder, true);
 			__modules__[module.id] = module;
-		});	
+		});
 	});
 }

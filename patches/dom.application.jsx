@@ -26,7 +26,7 @@ Application.prototype.is = function (application, version) {
 		}
 	}
 	var version = version || this.version;
-	var is_app = this.name.to('lower').contains(application.to('lower'));
+	var is_app = this.name && this.name.to('lower').contains(application.to('lower'));
 	var is_version = this.version.to('string').startswith(version);
 	return is_app && is_version;
 }

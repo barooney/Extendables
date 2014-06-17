@@ -324,7 +324,7 @@ function HTTPRequest (method, url, timeout) {
 		}
 	}
 
-	this._encoding = "UTF-8";
+	this._encoding = "BINARY";
 	/** @desc The character encoding in which to send this request, which is also the preferred response encoding. */
 	this.encoding = function (encoding) {
 		var encodings = ['ASCII', 'BINARY', 'UTF-8'];
@@ -347,11 +347,11 @@ function HTTPRequest (method, url, timeout) {
 		// request line
 		var head = [];
 		var url = this.url();
-		var path = url.pathname + url.search;
+		var path = url.pathname + (url.search || "");
 		var request_line = "{} {} HTTP/1.1".format(this.method(), path || "/");
 		head.push(request_line);
 		// headers to string (kv) form
-		var headers = this.headers().serialize('key-value', {'separator': ': ', 'eol': '\n'});
+		var headers = this.headers().serialize('key-value', {'separator': ': ', 'eol': '\r\n'});
 		head.push(headers);
 		var end_of_head = "\r\n";
 		return head.join("\r\n") + end_of_head;
@@ -395,8 +395,9 @@ function HTTPRequest (method, url, timeout) {
 		var start = new Date();
 		var socket = new Socket();
 		socket.timeout = this.timeout();
+		socket.encoding = "BINARY";
 		var host = "{}:{}".format(this.url().hostname, this.port());
-		if (socket.open(host, this.encoding())) {
+		if (socket.open(host, this.encoding("binary"))) {
 			var response = this._execute(socket);
 		} else {
 			throw new HTTPError("Could not connect to {}".format(host));
@@ -475,7 +476,9 @@ function HTTPResponse (method, encoding, request) {
 	}
 
 	this.process_headers = function () {
-		var raw_head = this._parts.join('').split('\n\n', 1)[0].split('\n');
+		var respData = this._parts.join('');
+		respData = respData.replace(/\r\n/g,'\n');
+		var raw_head = respData.split('\n\n', 1)[0].split('\n');
 		var raw_headers = raw_head.slice(1).join('\n');
 		this.status = raw_head[0].split(' ')[1].to('int');
 		this.headers = raw_headers.deserialize('key-value', {'separator': ': ', 'eol': '\n'});
@@ -498,6 +501,7 @@ function HTTPResponse (method, encoding, request) {
 
 	this.process = function () {
 		this.raw = this._parts.join('');
+		this.raw = this.raw.replace(/\r\n/g, '\n');
 		var start_of_body = this.raw.indexAfter('\n\n');
 		this.body = this.raw.substring(start_of_body);
 		// additional processing for chunked encoding

@@ -159,7 +159,7 @@ var SystemError = Error.factory("SystemError");
 
 var NotImplementedError = Error.factory("NotImplementedError");
 
-if (app.name.to('lower').contains("indesign")) {
+if (app.name && app.name.to('lower').contains("indesign")) {
 	/**
 	 * @class
 	 * @name ValidationError

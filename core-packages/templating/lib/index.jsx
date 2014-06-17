@@ -6,6 +6,8 @@ function Template (path, for_module) {
 	if (!template_file.exists) {
 		throw IOError("Couldn't open template {}".format(template_file));
 	}
+
+	template_file.encoding = "UTF-8";
 	template_file.open("r");
 	this.template = template_file.read();
 	template_file.close();
@@ -51,6 +53,7 @@ function Template (path, for_module) {
 	this.write_to = function (path) {
 		var out = new File(path).at("log").at(Folder.extendables);
 		if (this._output) {
+			out.encoding = "UTF-8";
 			out.open("w");
 			out.write(this._output);
 			out.close();

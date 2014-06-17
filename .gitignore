@@ -4,7 +4,9 @@ doc/_build
 doc/jsdoc
 patches/doc/jsdoc
 core-packages/*/doc/jsdoc
+site-packages
 *.pyc
 *.old
 *.orig
 *(Autosaved)*
+*.sublime-*

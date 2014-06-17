@@ -17,34 +17,64 @@ var Template = require("templating").Template;
 
 var TestRunner = function () {
 	this._clean_results = function (suites, results) {
+		var self = this
 		var cleaned_results = suites.map(function(suite) {
-			var total = suite.children.length;
-			var passed = suite.children.filter(function(spec) { 
-				return (results[spec.id].result == "passed");
-			}).length;
+
+
 			var specs = suite.children.map(function (spec) {
-				return {'name': spec.name, 
-					'result': results[spec.id].result, 
-					'messages': results[spec.id].messages
+				if(spec.type === 'suite'){
+					return self._clean_results([spec], results)[0]
+				}
+				else {
+
+					return {
+						'name': spec.name,
+						'result': results[spec.id].result,
+						'messages': results[spec.id].messages,
+						'type': 'spec'
 					}
+				}
 			});
+
+			var total = specs.reduce(function(a,b){
+				if(b.type === 'suite'){
+					return a + b.total
+				} else {
+					return a + 1
+				}
+			}, 0);
+			var passed = specs.reduce(function(a,b){
+				if(b.type === 'suite'){
+					return a + b.total
+				} else {
+					if(b.result == "passed"){
+						return a + 1
+					} else {
+						return a;
+					}
+				}
+			}, 0);
 
 			return {
 				'name': suite.name,
 				'passed': passed,
 				'failed': new Number(total - passed),
 				'total': total,
-				'specs': specs
+				'specs': specs,
+				'type': 'suite'
 				};
 		});
 		return cleaned_results;
 	}
 
+
 	this.run = function () {
+		if(this.results) return this.results;
 		var reporter = new jasmine.JsApiReporter();
 		jasmine.getEnv().addReporter(reporter);
 		jasmine.getEnv().execute();
-		return this._clean_results(reporter.suites_, reporter.results());
+		this.results = this._clean_results(reporter.suites_, reporter.results());
+		return this.results
 	}
 
 	this.get_environment = function () {
@@ -62,25 +92,53 @@ var TestRunner = function () {
 		});
 	}
 
-	// we'll add this into the html representation, 
+	// we'll add this into the html representation,
 	// so people can upload structured test reports to our central server.
 	this.as_json = function () {
-		
+	
+	}
+
+	this.print_suite = function(suite){
+		var self = this;
+		suite.specs.forEach(function(spec) {
+			if(spec.type == 'suite'){
+				self.print_suite(spec)
+			}
+			else {
+				$.writeln("\t" + spec.result.toUpperCase() + "\t" + spec.name);
+				if(spec.result != 'passed'){
+					$.writeln('\t\t'+spec.messages.join('\n\t\t'))
+				}
+			}
+		});
 	}
 
 	this.to_console = function () {
 		var results = this.run();
-		
+		var self = this
 		results.forEach(function(suite) {
 			$.writeln("\nSuite: {} \tran {} tests, {} failure(s)".format(suite.name, suite.total, suite.failed));
-			suite.specs.forEach(function(spec) {
-				$.writeln("\t" + spec.result.toUpperCase() + "\t" + spec.name);
-			});
+			self.print_suite(suite)
 		});
 	}
 
+
 	this.to_log = function () {
 		// todo
+	}
+
+	this.flatten = function(specs, res) {
+		res = res || [];
+		var self = this
+		specs.forEach(function(el){
+			if(el.type === 'suite'){
+				self.flatten(el.specs, res)
+			} else {
+				res.push(el)
+			}
+		})
+
+		return res;
 	}
 
 	this.to_html = function (filename) {
@@ -88,13 +146,17 @@ var TestRunner = function () {
 		var datetime = new Date();
 		var date = datetime.toDateString();
 		var time = "{}:{}".format(datetime.getHours(), datetime.getMinutes());
-		var environment = this.get_environment();	
+		var environment = this.get_environment();
 
 		// run tests
 		var results = this.run();
-		
+		var self = this
+
 		// tidy up results
 		results.forEach(function(suite) {
+			var prevSpecs = self.flatten(suite.specs);
+
+			suite.specs = prevSpecs;
 			suite.specs.forEach(function(spec) {
 				if (spec.result == 'failed') {
 					var messages = spec.messages.reject(function (message) {
@@ -106,15 +168,15 @@ var TestRunner = function () {
 				}
 			});
 		});
-		
+
 		var duration = ((new Date().getTime() - datetime.getTime())/1000).toFixed(2);
 
-        var template = new Template("report.html", module);
+		var template = new Template("report.html", module);
 		template.render({
-		  'date': date, 
-		  'time': time, 
-		  'duration': duration, 
-		  'suites': results, 
+		  'date': date,
+		  'time': time,
+		  'duration': duration,
+		  'suites': results,
 		  'total': results.sum('total'),
 		  'fails': results.sum('failed'),
 		  'passes': results.sum('passed'),
